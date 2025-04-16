@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <link rel="stylesheet"
+    href='style.css'>
+</head>
+<body>
+    <div class="app">
+        <h1>Welcome to the Quiz App</h1>
+        <div class="quiz">
+            <h2 id="Question">Start Quiz</h2>
+            <div id="Answer-Buttons">
+                <button class="btn">Answer 1</button>
+                <button class="btn">Answer 2</button>
+                <button class="btn">Answer 3</button>
+                <button class="btn">Answer 4</button>
+            </div> 
+        </div> 
+    </div>
+    <!-- i am not understand for this.    -->
+     <script>
+        async function loadQuiz() {
+          const res = await fetch('/quiz');
+          const data = await res.json();
+    
+          document.getElementById('Question').innerText = data.question;
+          const answerContainer = document.getElementById('Answer-Buttons');
+          answerContainer.innerHTML = '';
+    
+          data.answers.forEach((answer, index) => {
+            const btn = document.createElement('button');
+            btn.classList.add('btn');
+            btn.innerText = answer;
+            btn.onclick = async () => {
+              const response = await fetch('/submit', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ selected: index })
+              });
+    
+              const result = await response.json();
+              document.getElementById('Result').innerText = result.correct
+                ? 'Correct!'
+                : 'Wrong Answer!';
+            };
+            answerContainer.appendChild(btn);
+          });
+        }
+    
+        loadQuiz();
+      </script>
+    </body>
+    </html>
